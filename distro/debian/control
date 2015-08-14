@@ -1,0 +1,14 @@
+Source: oticp
+Section: python
+Priority: optional
+Maintainer: Debian Science Maintainers <debian-science-maintainers@lists.alioth.debian.org>
+Uploaders: Christophe Prud'homme <prudhomm@debian.org>, Denis Barbier <barbier@debian.org>
+Build-Depends: debhelper (>= 8), quilt, cmake, python-openturns-dev, python
+Standards-Version: 3.9.3
+Homepage: http://www.openturns.org/
+
+Package: python-oticp
+Architecture: all
+Depends: python-openturns, ${misc:Depends}, ${python:Depends}
+Description: Awesome OpenTURNS template python module.
+ Features a plugin architecture allowing for adding new checks is easily.

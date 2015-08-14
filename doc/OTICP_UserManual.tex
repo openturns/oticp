@@ -1,0 +1,314 @@
+% 
+% Permission is granted to copy, distribute and/or modify this document
+% under the terms of the GNU Free Documentation License, Version 1.2
+% or any later version published by the Free Software Foundation;
+% with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
+% Texts.  A copy of the license is included in the section entitled "GNU
+% Free Documentation License".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\section{User Manual}
+
+This document gives details on the new methods proposed by the python scripts. 
+
+
+
+\subsection{Scripts required}
+
+We describe here the python scripts required by the module : 
+\begin{itemize}
+  \item $IntegralUserDefined.py$, which implements the IntegralUserDefined class. This class is the UserDefined already contained in Open TURNS, specialised for integral variables.
+  \item $IntegralUserDefinedFactory.py$, which gives the functionnalities to adjust a IntegralUserDefined variable to a set of data.
+  \item $IntegralCompoundPoisson.py$ which implements the integral compound Poisson distribution.
+  \item $Polynomial.py$ which gives functionnalities to manipulate sparse polynomials.
+  \item $t\_IntegralUserDefined\_std.py$ which is the test file associated to the IntegralUserDefined class.
+  \item $t\_IntegralUserDefinedFactory\_std.py$ which is the test file associated to the IntegralUserDefinedFactory class.
+  \item $t\_IntegralCompoundPoisson\_validation.py$ which is the test file associated to the OTICP class.
+\end{itemize}
+
+
+\subsection{IntegralUserDefined}
+
+\begin{description}
+
+\item[Usage :] $IntegralUserDefined(range, weight)$
+
+\item[Arguments :]  \strut
+  \begin{description}
+  \item $range$ : python list of integers or integer collection of type $UnsignedIntegerCollection$. For example, $range = [5,7,32]$ or $range = UnsignedIntegerCollection([5,7,32])$
+  \item $weight$ :  python list of the associated weights or a $NumericalPoint$. If the weights are not normalised, they are authomatically normalised by Open TURNS. For example, $weight = [0.1, 0.2, 0.3, 0.4]$ or  $weight = NumericalPoint([0.1, 0.2, 0.3, 0.4])$.
+  \end{description}
+
+\item[Value :] a $IntegralUserDefined$, which is a variable which range ($range$) is  finite with integer values, associated to the weights given in $weight$.
+
+\item[Some methods :]  \strut
+  \begin{description}
+
+  \item $getRange$
+    \begin{description}
+    \item[Usage :] $getRange()$
+    \item[Arguments :] none
+    \item[Value :]  a $UnsignedIntegerCollection$, which is a python list of integers which are the positive integer values of the range.
+    \end{description}
+    \bigskip
+
+
+  \item $getWeights$
+    \begin{description}
+    \item[Usage :] $getWeights()$
+    \item[Arguments :] none
+    \item[Value :]  a $NumericalPoint$, the python list of the associated weights. 
+    \end{description}
+    \bigskip
+
+
+
+  \item $getNormalizedWeights$
+    \begin{description}
+    \item[Usage :] $getNormalizedWeights()$
+    \item[Arguments :] none
+    \item[Value :]  a $NumericalPoint$, the python list of the associated normalised weights.
+    \end{description}
+
+    \end{description}
+ 
+\end{description}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{IntegralUserDefinedFactory}
+
+
+\begin{description}
+
+\item[Usage :] $IntegralUserDefinedFactory$ is a static class which is  used through its unique method $buildImplementation$.
+
+\item[One method :]  $buildImplementation$
+    \begin{description}
+
+    \item[Usage :] $buildImplementation(echantillon)$
+
+    \item[Arguments :]  $sample$ : un $NumericalSample$ which represents a numerical sample of the random variable. Its values must be integers.
+
+    \item[Value :]  a $IntegralUserDefined$, a random variable which range is defined by the values f the $sample$. The probability of $k$ is estimated by  $ p_k = \displaystyle \frac{N_k}{n}$ where  $n$  is the size of $sample$ and $N_k$ the number of values of the $sample$ equal to $k$.
+
+    \end{description}
+ 
+
+ 
+\end{description}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{IntegralCompoundPoisson}
+
+
+
+\begin{description}
+
+\item[Usage :] strut
+  \begin{description}
+    \item $IntegralCompoundPoisson(atomDistribution, theta)$
+    \item $IntegralCompoundPoisson(atomDistribution, theta, param)$
+  \end{description}
+
+\item[Arguments :]  \strut
+  \begin{description}
+    \item $atomDistribution$ : a $IntegralUserDefined$ distribution
+    \item $theta	$ : a strictly positive real
+    \item $param$ : an integer. By default, $param = 10$. This parameter is such that $m = 2^{param}$ where $m$ is defined in the relation (\ref{pnApprox2}) with  the relation $m = 2^{param}$.
+  \end{description}
+
+\item[Value :] a $IntegralCompoundPoisson$, which the variable $Y$ defined as : 
+
+\begin{equation}
+Y = \left( \displaystyle \sum_{i=1}^{N}X_i \right)\fcar{N\geq1}
+\end{equation}
+where $N$ is a poisson distributed variable, the variables $X_i$  are discrete, with finite range and integer values, identically distributed, mutually independent and also independent of $N$.\\
+
+When a variable $Y$ of type $IntegralCompoundPoisson$ is created, all the values $p_k = \mathcal{P}(Y=k)$ are authomatically evaluated for $k \in [0, m-1]$ with $m = 2^{param}$. If the User asks for the evaluation of $p_n$ for $n \geq m$, then Open TURNS authomatically re-evaluates  all the values   $p_k$ for $k \in [0, N]$  with $N   = 2^{E[log_2 n]+1}$ (ie the first power of 2 which is strictly  $>n$).
+
+\item[Some methods :]  \strut
+  \begin{description}
+
+  \item $getAtomDistribution$
+    \begin{description}
+    \item[Usage :] $getAtomDistribution()$
+    \item[Arguments :] none.
+    \item[Value :]  the finite discrete distribution of the variables $X_i$ of type $IntegralUserDefined$
+    \end{description}
+    \bigskip
+
+
+  \item $getTheta$
+    \begin{description}
+    \item[Usage :] $getTheta()$
+    \item[Arguments :] none.
+    \item[Value :]  un positive real, the Poisson distribution parameter.
+    \end{description}
+    \bigskip
+
+  \item $getLog2Cache$
+    \begin{description}
+    \item[Usage :] $getLog2Cache()$
+    \item[Arguments :] none.
+    \item[Value :]  an integer, the parameter $param$. By default, $param = 10$. This parameter is such that $m = 2^{param}$ where $m$ is defined in the relation (\ref{pnApprox2}) with  the relation $m = 2^{param}$.
+    \end{description}
+    \bigskip
+
+
+  \item $getM$
+    \begin{description}
+    \item[Usage :] $getM()$
+    \item[Arguments :] none.
+    \item[Value :]  the integer $m$ such that  $m = 2^{param}$. By default, $m=2^{10}$. $m$ is defined in the relation    (\ref{pnApprox2}).
+    \end{description}
+    \bigskip
+
+  \item $getRealization$
+    \begin{description}
+    \item[Usage :] $getRealization()$
+    \item[Arguments :] none.
+    \item[Value :]  an integer inside the of $Y$.
+    \end{description}
+    \bigskip
+
+
+  \item $getNumericalSample$
+    \begin{description}
+    \item[Usage :] $getNumericalSample(size)$
+    \item[Arguments :] $size$ : an integer, the number of realistaions to generate a numerical sample of $Y$.
+    \end{description}
+    \bigskip
+
+
+
+  \item $getMean$
+    \begin{description}
+    \item[Usage :] $getMean()$
+    \item[Arguments :]  none.
+    \item[Value :]  the mean of the random variable.
+    \end{description}
+    \bigskip
+
+
+  \item $getCovariance$
+    \begin{description}
+    \item[Usage :] $getCovariance()$
+    \item[Arguments :]  none.
+    \item[Value :]  the variance of the random variable.
+    \end{description}
+    \bigskip
+
+
+  \item $getStandardDeviation$
+    \begin{description}
+    \item[Usage :] $getStandardDeviation()$
+    \item[Arguments :]  none.
+    \item[Value :]  the standard deviation of the random variable.
+    \end{description}
+    \bigskip
+ 
+
+  \item $computeCDF$
+    \begin{description}
+    \item[Usage :] \strut
+  \begin{description}
+      \item $computeCDF(value)$
+      \item $computeCDF(value, True)$
+  \end{description}
+    \item[Arguments :] \begin{description}
+      \item $value$ : an integer.
+      \item $True$ : a boolean wich is False when not mentioned.
+  \end{description}
+    \item[Value :]  a real between 0 and 1. When the boolean is FALSE, the function computes the CDF at $value$. In the other case, it computes the tail of the CDF at $value$.
+    \end{description}
+    \bigskip
+
+
+  \item $computePDF$
+    \begin{description}
+    \item[Usage :] $computePDF(value)$
+    \item[Arguments :]  $value$ : an integer.
+    \item[Value :]  a real which is the PDF value at point $value$.
+    \end{description}
+    \bigskip
+
+  \item $computeQuantile$
+    \begin{description}
+    \item[Usage :] $computeQuantile(q)$
+    \item[Arguments :]  $q$ : a real between 0 and 1. 
+    \item[Value :]  the quantile of order $q$.
+    \end{description}
+    \bigskip
+
+
+  \item $drawPDF$
+    \begin{description}
+    \item[Usage :] $drawPDF(xMin, xMax)$
+    \item[Arguments :] $(xMin, xMax)$ : the min and max values of the graph.
+    \item[Value :]  a $Graph$ which contains the PDF curve.
+    \end{description}
+    \bigskip
+
+
+  \item $drawCDF$
+    \begin{description}
+    \item[Usage :] $drawCDF(xMin, xMax)$
+    \item[Arguments :] $(xMin, xMax)$ : the min and max values of the graph.
+    \item[Value :]  a $Graph$ which contains the CDF curve.
+    \end{description}
+
+    \end{description}
+ 
+\end{description}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Polynomials}
+
+The file $Polynomials.py$ contains a set of functions linked to the manipulation of polynomials.
+
+
+
+\begin{description}
+
+
+  \item $denseToSparse$
+    \begin{description}
+    \item[Usage :] $denseToSparse(polynomial)$
+    \item[Arguments :] $polynomial$ : a $UniVariatePolynomial$ which is the polynomials class in Open TURNS.
+    \item[Value :]  $degrees, coefficients$ : respectively a $UnsignedIntegerCollection$ and $NumericalPoint$ which are the degrees of the monoms which coefficient is not nul and the associated coefficient.
+    \end{description}
+    \bigskip
+
+
+  \item $buildUniVariatePolynomial$
+    \begin{description}
+    \item[Usage :] $buildUniVariatePolynomial(degrees, coefficients)$
+    \item[Arguments :] $degrees, coefficients$ : respectively a $UnsignedIntegerCollection$ and $NumericalPoint$ which gives the degrees of the monoms which coefficient is not nul and the associated coefficient.
+    \item[Value :]  $polynomial$ : a $UniVariatePolynomial$ which is the polynomials class in Open TURNS, with a full representation : the coefficients of all the monoms are stocked, some eventually equal to 0.
+    \end{description}
+    \bigskip
+
+
+  \item $truncateUniVariatePolynomial$
+    \begin{description}
+    \item[Usage :] $truncateUniVariatePolynomial(polynomial, truncation)$
+    \item[Arguments :]  \strut
+    \begin{description}
+      \item $polynomial$ : a $UniVariatePolynomial$ which is the polynomials class in Open TURNS.
+      \item $truncation$ : an integer.
+    \end{description}
+    \item[Value :]  a $UniVariatePolynomial$ : this is the initial polynomials truncated to the degree $truncation+1$. The degree of the truncated polynomials is $truncation$.
+    \end{description}
+
+ 
+\end{description}
+
+
